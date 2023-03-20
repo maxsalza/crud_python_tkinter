@@ -1,10 +1,12 @@
 from tkinter import ttk
 from tkinter import *
 import sqlite3
+import re
 
 
 class Product:
     db_name = 'ddbb.db'
+    patron = r'^[+-]?\d+(\.\d+)?$'
 
     def __init__(self, window):
         self.wind = window
@@ -73,12 +75,15 @@ class Product:
     
     def add_prodcuts(self):
         if self.validation():
-            query= 'INSERT INTO product VALUES(NULL, ?, ?)'
-            parameters = (self.name.get(), self.price.get())
-            self.run_query(query, parameters)
-            self.message['text'] = 'Producto {} agregado satifastoriamente '.format(self.name.get())
-            self.name.delete(0, END)
-            self.price.delete(0, END)
+            if re.match(self.patron, self.price.get()):
+                query= 'INSERT INTO product VALUES(NULL, ?, ?)'
+                parameters = (self.name.get(), self.price.get())
+                self.run_query(query, parameters)
+                self.message['text'] = 'Producto {} agregado satifastoriamente '.format(self.name.get())
+                self.name.delete(0, END)
+                self.price.delete(0, END)
+            else:
+                self.message['text'] = 'Debe ingresar un numero' 
         else:
             self.message['text'] = 'Nombre y Precio son Requeridos'
         self.get_products()
